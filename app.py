@@ -3,7 +3,7 @@ import streamlit as st
 # Configuración visual de la aplicación web
 st.set_page_config(page_title="BetMinder Pro", page_icon="📊", layout="centered")
 
-# Muestra tu nuevo logotipo profesional con el nombre exacto de tu archivo
+# Muestra tu nuevo logotipo profesional
 st.image("BetMinder.png", width=150)
 
 st.title("📊 BetMinder: Gestión Automatizada de Riesgo")
@@ -15,18 +15,18 @@ st.header("🧮 Calculadora de Apuesta (Criterio Kelly)")
 bankroll = st.number_input("Ingresá tu capital actual ($):", min_value=10.0, value=500.0, step=10.0)
 cuota = st.number_input("Cuota del evento (Ej: 1.85):", min_value=1.01, value=1.85, step=0.05)
 
-# Lógica matemática básica de control
-if cuota > 1:
-    stake_sugerido = (bankroll * 0.03) / (cuota - 1)
-    if stake_sugerido > (bankroll * 0.10): #开 Tope máximo de seguridad del 10%
+# Lógica matemática estricta y corregida
+if cuota > 1.00:
+    # Se sugiere arriesgar un 3% base ajustado por la cuota
+    stake_sugerido = (bankroll * 0.03) / (cuota - 1.00)
+    
+    # Tope máximo de seguridad del 10%
+    if stake_sugerido > (bankroll * 0.10): 
         stake_sugerido = bankroll * 0.10
-else:
-    stake_sugerido = 0
-
-if stake_sugerido > 0:
+        
     st.info(f"Monto máximo sugerido para esta apuesta: **${stake_sugerido:.2f} USD**")
 else:
-    st.warning("Introduce una cuota válida mayor a 1.00.")
+    st.warning("⚠️ La cuota introducida no es válida. Debe ser mayor a 1.00 para calcular el riesgo.")
 
 # --- BARRERA DE PAGO (MONETIZACIÓN SaaS) ---
 st.markdown("---") 
