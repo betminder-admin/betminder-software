@@ -20,7 +20,7 @@ if cuota > 1.00:
     # Se sugiere arriesgar un 3% base ajustado por la cuota
     stake_sugerido = (bankroll * 0.03) / (cuota - 1.00)
     
-    # Tope máximo de seguridad del 10%
+    # Prorrateo o tope máximo de seguridad del 10%
     if stake_sugerido > (bankroll * 0.10): 
         stake_sugerido = bankroll * 0.10
         
