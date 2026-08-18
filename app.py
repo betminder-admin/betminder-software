@@ -1,4 +1,5 @@
 import streamlit as st
+st.image("logo.png", width=150)
 
 st.set_page_config(page_title="BetMinder Pro", page_icon="📊")
 st.title("📊 BetMinder: Gestión de Riesgo para Apostadores")
