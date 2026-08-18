@@ -13,7 +13,7 @@ st.write("Calculá tu stake matemático óptimo y protegé tu dinero de decision
 st.header("🧮 Calculadora de Apuesta (Criterio Kelly)")
 
 bankroll = st.number_input("Ingresá tu capital actual ($):", min_value=10.0, value=500.0, step=10.0)
-cuota = st.number_input("Cuota del evento (Ej: 1.85):", min_value=1.01, value=1.85, step=0.05)
+cuota = st.number_input("Cuota del evento (Ej: 1.85):", value=1.85, step=0.05, format="%.2f")
 
 # Lógica matemática estricta y corregida
 if cuota > 1.00:
