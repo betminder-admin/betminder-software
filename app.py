@@ -1,62 +1,112 @@
 import streamlit as st
-import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
 
-# 1. ÓPTICA BASE: Configuración visual centrada de la app
-st.set_page_config(page_title="BetMinder Pro", page_icon="📊", layout="centered")
+# Configuración de la página
+st.set_page_config(page_title="Calculador Geométrico 3D", layout="wide")
 
-# Muestra tu logotipo profesional de Canva
-st.image("BetMinder.png", width=140)
+st.title("📐 Generador y Calculador Geométrico 3D")
+st.write("Selecciona un cuerpo geométrico, ingresa sus dimensiones y obtén sus propiedades topológicas y métricas.")
 
-st.title("📊 BetMinder: Gestión Automatizada de Riesgo")
-st.write("Calculá tu stake matemático óptimo y protegé tu dinero de decisiones emocionales.")
+# --- BARRA LATERAL: CONTROLES ---
+st.sidebar.header("Configuración del Cuerpo")
+cuerpo = st.sidebar.selectbox("Seleccione el Cuerpo:", ["Cubo", "Cilindro", "Esfera"])
 
-# --- SECCIÓN GRATUITA (EL GANCHO) ---
-st.markdown("### 🧮 Calculadora de Apuesta (Criterio Kelly)")
+# Inicialización de variables de cálculo
+sup, vol = 0.0, 0.0
+caras, aristas, vertices = 0, 0, 0
 
-# Entradas numéricas integradas en dos columnas limpias
-col_in1, col_in2 = st.columns(2)
-with col_in1:
-    bankroll = st.number_input("Ingresá tu capital actual ($):", min_value=10.0, value=500.0, step=10.0)
-with col_in2:
-    cuota = st.number_input("Cuota del evento (Ej: 1.85):", value=1.85, step=0.05, format="%.2f")
+# Crear la figura 3D de Matplotlib
+fig = plt.figure(figsize=(6, 6))
+ax = fig.add_subplot(111, projection='3d')
 
-# Lógica matemática interna
-if cuota > 1.00:
-    stake_sugerido = (bankroll * 0.03) / (cuota - 1.00)
-    # Tope máximo de seguridad del 10%
-    if stake_sugerido > (bankroll * 0.10): 
-        stake_sugerido = bankroll * 0.10
+# --- LÓGICA POR CUERPO ---
+if cuerpo == "Cubo":
+    lado = st.sidebar.number_input("Lado:", min_value=0.1, value=5.0, step=0.5)
     
-    # 🎨 ÓPTICA OPCIÓN 1: Tarjetas de Métricas Grandes e Impactantes
-    st.markdown("#### 📈 Resultados del Análisis de Riesgo")
-    m_col1, m_col2, m_col3 = st.columns(3)
-    m_col1.metric(label="Banca a Proteger", value=f"${bankroll:.2f}")
-    m_col2.metric(label="Inversión Máxima", value=f"${stake_sugerido:.2f}", delta="-3.0% Base")
-    m_col3.metric(label="Nivel de Alerta", value="Seguro" if cuota > 1.5 else "Riesgoso")
+    # Cálculos
+    sup = 6 * (lado ** 2)
+    vol = lado ** 3
+    caras, aristas, vertices = 6, 12, 8
     
-    # 🎨 ÓPTICA OPCIÓN 2: Gráfico de Barras de Distribución de Capital
-    st.markdown("#### 📊 Distribución Óptica de la Banca")
-    datos_grafico = pd.DataFrame({
-        'Categoría': ['Capital Seguro', 'Monto a Arriesgar'],
-        'Monto ($)': [bankroll - stake_sugerido, stake_sugerido]
-    })
-    st.bar_chart(datos_grafico, x='Categoría', y='Monto ($)', color="#1E3A8A")
+    # Gráfico
+    r = [0, lado]
+    X, Y, Z = np.meshgrid(r, r, r)
+    ax.scatter(X, Y, Z, alpha=0)
+    xx, yy = np.meshgrid(r, r)
+    ax.plot_surface(xx, yy, np.atleast_2d(0), alpha=0.4, color='cyan')
+    ax.plot_surface(xx, yy, np.atleast_2d(lado), alpha=0.4, color='cyan')
+    ax.plot_surface(xx, np.atleast_2d(0), yy, alpha=0.4, color='cyan')
+    ax.plot_surface(xx, np.atleast_2d(lado), yy, alpha=0.4, color='cyan')
+    ax.plot_surface(np.atleast_2d(0), xx, yy, alpha=0.4, color='cyan')
+    ax.plot_surface(np.atleast_2d(lado), xx, yy, alpha=0.4, color='cyan')
 
-else:
-    st.warning("⚠️ La cuota introducida no es válida. Debe ser mayor a 1.00 para calcular el riesgo.")
-
-# --- BARRERA DE PAGO (MONETIZACIÓN SaaS) ---
-st.markdown("---")
-
-# 🎨 ÓPTICA OPCIÓN 3: Tarjeta Contenedora Estilizada con Bordes para el Plan Pro
-with st.container(border=True):
-    st.subheader("🚨 Desbloqueá la Protección Avanzada Anti-Racha (Pro)")
-    st.write("""
-    ¿Sabías que el 95% de los apostadores pierden por no saber detenerse? 
-    Con la cuenta Premium, el sistema registra tus operaciones en tiempo real y te da acceso al panel avanzado de control para frenar tus pérdidas diarias antes de entrar en estado de ira (tilt).
-    """)
+elif cuerpo == "Cilindro":
+    radio = st.sidebar.number_input("Radio:", min_value=0.1, value=3.0, step=0.5)
+    altura = st.sidebar.number_input("Altura:", min_value=0.1, value=7.0, step=0.5)
     
-    # Botón interactivo destacado que redirige a tu comunidad de Telegram
-    url_comunidad = "https://t.me"
-    st.link_button("🔥 Unirse al Canal y Activar Plan Pro", url_comunidad, type="primary", use_container_width=True)
-    st.caption("🔒 Acceso seguro vía Telegram. Suscripción mensual administrada por soporte. Cancela cuando quieras.")
+    # Cálculos
+    sup = 2 * np.pi * radio * (radio + altura)
+    vol = np.pi * (radio ** 2) * altura
+    caras, aristas, vertices = 3, 2, 0
+    
+    # Gráfico
+    z = np.linspace(0, altura, 20)
+    theta = np.linspace(0, 2*np.pi, 20)
+    theta_grid, z_grid = np.meshgrid(theta, z)
+    x_grid = radio * np.cos(theta_grid)
+    y_grid = radio * np.sin(theta_grid)
+    ax.plot_surface(x_grid, y_grid, z_grid, alpha=0.4, color='orange')
+    r_tapa, th_tapa = np.meshgrid(np.linspace(0, radio, 10), theta)
+    ax.plot_surface(r_tapa*np.cos(th_tapa), r_tapa*np.sin(th_tapa), np.atleast_2d(0), alpha=0.5, color='orange')
+    ax.plot_surface(r_tapa*np.cos(th_tapa), r_tapa*np.sin(th_tapa), np.atleast_2d(altura), alpha=0.5, color='orange')
+
+elif cuerpo == "Esfera":
+    radio = st.sidebar.number_input("Radio:", min_value=0.1, value=4.0, step=0.5)
+    
+    # Cálculos
+    sup = 4 * np.pi * (radio ** 2)
+    vol = (4/3) * np.pi * (radio ** 3)
+    caras, aristas, vertices = 1, 0, 0
+    
+    # Gráfico
+    u = np.linspace(0, 2 * np.pi, 30)
+    v = np.linspace(0, np.pi, 30)
+    x = radio * np.outer(np.cos(u), np.sin(v))
+    y = radio * np.outer(np.sin(u), np.sin(v))
+    z = radio * np.outer(np.ones(np.size(u)), np.cos(v))
+    ax.plot_surface(x, y, z, alpha=0.4, color='gainsboro', edgecolor='blue', lw=0.3)
+
+# Ajustes visuales de la gráfica
+ax.set_xlabel('Eje X')
+ax.set_ylabel('Eje Y')
+ax.set_zlabel('Eje Z')
+ax.set_title(f"Visualización de {cuerpo}")
+
+# --- DISTRIBUCIÓN EN PANTALLA ---
+col1, col2 = st.columns([1, 1.5])
+
+with col1:
+    st.subheader("📊 Resultados de Análisis")
+    
+    # Métricas principales
+    st.metric(label="Superficie Total", value=f"{sup:.2f} u²")
+    st.metric(label="Volumen", value=f"{vol:.2f} u³")
+    
+    st.markdown("---")
+    st.markdown("**Propiedades del Poliedro:**")
+    st.write(f"• **Caras:** {caras}")
+    st.write(f"• **Aristas:** {aristas}")
+    st.write(f"• **Vértices:** {vertices}")
+    
+    # --- INTEGRACIÓN COMPONENTES DE MONETIZACIÓN (Ejemplo Lemon Squeezy) ---
+    st.markdown("---")
+    st.subheader("⭐ Versión Premium")
+    st.write("Desbloquea exportación en PDF, CAD y soporte para figuras complejas.")
+    # Link directo al checkout creado en tu panel de Lemon Squeezy
+    st.markdown("[🚀 Comprar Acceso Premium](https://lemonsqueezy.com)", unsafe_allow_html=True)
+
+with col2:
+    st.subheader("📦 Renderizado 3D Interactivo")
+    # Mostrar el gráfico de Matplotlib en la app web
+    st.pyplot(fig)
